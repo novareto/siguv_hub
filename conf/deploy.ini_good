@@ -1,0 +1,54 @@
+[filter:cipher]
+use = egg:uvc.concierge#cipher
+cipher_key = mKaqGWwAVNnthL6J
+
+[app:uvcsite]
+use = egg:uvc.concierge#proxy
+title = UVCSite
+href = http://karl.novareto.de:8090/
+login_url = http://karl.novareto.de:8090/app/
+string_keys = REMOTE_USER
+use_x_headers = true
+login_method = xmlrpc
+
+[app:asd]
+use = egg:uvc.concierge#proxy
+title = ASD-APP 
+href = http://karl.novareto.de:8898/mitglieder
+login_url = http://karl.novareto.de:8898/mitglieder/checkauthmember
+string_keys = REMOTE_USER
+login_method = json
+
+[app:portal]
+use = egg:uvc.concierge#proxy
+title = Novareto
+href = http://novareto.de
+
+[filter:assets]
+use = egg:fanstatic#fanstatic
+recompute_hashes = false
+versioning = true
+bottom = true
+minified = true
+compile = true
+publisher_signature = uvc.conciergewsgi
+
+[filter:who]
+use = egg:repoze.who#config
+config_file = %(here)s/who.ini
+log_file = stdout
+log_level = info 
+
+[composite:hub]
+use = egg:uvc.concierge#remotehub
+/uvcsite = uvcsite
+/asd = asd
+/ = portal
+
+[pipeline:main]
+pipeline = assets cipher who hub
+
+[server:main]
+use = egg:Paste#http
+host = 0.0.0.0
+port = 8080
