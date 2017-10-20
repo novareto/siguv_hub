@@ -36,6 +36,20 @@ bottom = true
 minified = true
 publisher_signature = uvc.conciergewsgi
 
+
+[filter:cors]
+use = egg:wsgicors#middleware
+
+# define a "free" policy
+free_origin = copy
+free_headers = *
+free_expose_headers = *
+free_methods = HEAD, OPTIONS, GET
+free_maxage = 180
+free_credentials = true
+policy = free
+
+
 [filter:who]
 use = egg:repoze.who#config
 config_file = %(here)s/who.ini
@@ -58,7 +72,7 @@ use = egg:uvc.concierge#remotehub
 /listener = listener
 
 [pipeline:main]
-pipeline = assets cipher who session hub
+pipeline = cors assets cipher who session hub
 
 [server:main]
 use = egg:Paste#http
