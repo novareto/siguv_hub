@@ -11,6 +11,10 @@ secure = False
 include_ip = False
 pkey = ${buildout:directory}/identity/server.key
 
+[plugin:portals]
+# identification and authentication
+use = uvc.concierge.login:PortalsLoginPlugin
+
 [plugin:basicauth]
 # identification and challenge
 use = repoze.who.plugins.basicauth:make_plugin
@@ -20,10 +24,6 @@ realm = 'sample'
 request_classifier = repoze.who.classifiers:default_request_classifier
 challenge_decider = repoze.who.classifiers:default_challenge_decider
 remote_user_key = REMOTE_USER
-
-[plugin:portals]
-# identification and authentication
-use = uvc.concierge.login:PortalsLoginPlugin
 
 [identifiers]
 # plugin_name;classifier_name:.. or just plugin_name (good for any)
